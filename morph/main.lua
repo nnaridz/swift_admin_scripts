@@ -1,8 +1,13 @@
-local morphModel = "s_m_y_cop_01" -- Change this to the model you want to morph to
-local model = GetHashKey(modelName)
+-- Default Model: mp_m_freemode_01, mp_f_freemode_01
+local morphModel = "a_c_chimp" -- https://docs.fivem.net/docs/game-references/ped-models/
+
+local model = GetHashKey(morphModel)
 RequestModel(model)
-while not HasModelLoaded(model) do
+local start = GetGameTimer()
+while not HasModelLoaded(model) and (GetGameTimer() - start) < 5000 do
     Wait(0)
 end
-SetPlayerModel(PlayerId(), model)
-SetModelAsNoLongerNeeded(model)
+if HasModelLoaded(model) then
+    SetPlayerModel(PlayerId(), model)
+    SetModelAsNoLongerNeeded(model)
+end
