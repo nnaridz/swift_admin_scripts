@@ -7,8 +7,8 @@ if _G.autoFlipThread then
 end
 
 if _G.autoFlipActive then
-    _G.autoFlipThread = Citizen.CreateThread(function()
-        print("Autoflip Started")
+    _G.autoFlipThread = CreateThread(function()
+        print("Autoflip Activated")
         while _G.autoFlipActive do
             local ped = PlayerPedId()
             local veh = GetVehiclePedIsIn(ped, false)
