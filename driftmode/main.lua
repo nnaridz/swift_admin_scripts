@@ -4,10 +4,11 @@ if _G.driftThread then
     print("Drift Mode Stopped")
     TerminateThread(_G.driftThread)
     _G.driftThread = nil
+    Wait(100)
 end
 
 if _G.driftActive then
-    _G.driftThread = CreateThread(function()
+    _G.driftThread = Citizen.CreateThread(function()
         print("Drift Mode Activated")
         while _G.driftActive do
             local ped = PlayerPedId()

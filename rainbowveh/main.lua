@@ -4,10 +4,11 @@ if _G.rainbowThread then
     print("Rainbow Vehicle Stopped")
     TerminateThread(_G.rainbowThread)
     _G.rainbowThread = nil
+    Wait(100)
 end
 
 if _G.rainbowActive then
-    _G.rainbowThread = CreateThread(function()
+    _G.rainbowThread = Citizen.CreateThread(function()
         print("Rainbow Vehicle Activated")
 
         local r, g, b = 255, 0, 0

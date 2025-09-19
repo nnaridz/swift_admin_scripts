@@ -4,10 +4,11 @@ if _G.autoFlipThread then
     print("Autoflip Stopped")
     TerminateThread(_G.autoFlipThread)
     _G.autoFlipThread = nil
+    Wait(100)
 end
 
 if _G.autoFlipActive then
-    _G.autoFlipThread = CreateThread(function()
+    _G.autoFlipThread = Citizen.CreateThread(function()
         print("Autoflip Activated")
         while _G.autoFlipActive do
             local ped = PlayerPedId()
