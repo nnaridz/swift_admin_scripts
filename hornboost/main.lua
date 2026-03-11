@@ -11,30 +11,70 @@ if _G.hornBoostActive then
     _G.hornBoostThread = Citizen.CreateThread(function()
         print("Horn Boost Activated")
 
+        local function normalizeTopSpeedModifier(mod)
+            if mod == nil or mod < 0.0 then
+                return 1.0
+            end
+            return mod
+        end
+
+        local function resetVehicleMods(veh, originalTopSpeedMod)
+            if veh == 0 or veh == nil then
+                return
+            end
+
+            SetVehicleBoostActive(veh, false)
+            ModifyVehicleTopSpeed(veh, normalizeTopSpeedModifier(originalTopSpeedMod))
+            SetVehicleCheatPowerIncrease(veh, 0.0)
+        end
+
+        local lastVeh = 0
+        local lastVehTopSpeedMod = 1.0
+        local boosting = false
+
         while _G.hornBoostActive do
             local ped = PlayerPedId()
             local veh = GetVehiclePedIsIn(ped, false)
 
-            if veh ~= 0 and IsPedInAnyVehicle(ped, false) then
-                -- Check if horn is being pressed
-                if IsControlPressed(0, 86) then -- 86 = INPUT_VEH_HORN (E)
+            if veh ~= lastVeh then
+                if lastVeh ~= 0 then
+                    resetVehicleMods(lastVeh, lastVehTopSpeedMod)
+                end
+
+                lastVeh = veh
+                lastVehTopSpeedMod = (veh ~= 0) and GetVehicleTopSpeedModifier(veh) or 1.0
+                boosting = false
+            end
+
+            local isDriver = veh ~= 0 and GetPedInVehicleSeat(veh, -1) == ped
+
+            if veh ~= 0 and IsPedInAnyVehicle(ped, false) and isDriver then
+                local hornPressed = IsControlPressed(0, 86) -- 86 = INPUT_VEH_HORN
+
+                if hornPressed then
                     local currentSpeed = GetEntitySpeed(veh)
                     local boostSpeed = currentSpeed + 5.0
 
-                    -- Force boost effect
                     SetVehicleBoostActive(veh, true)
-                    ModifyVehicleTopSpeed(veh, 50.0) -- allow higher top speed temporarily
-                    SetVehicleCheatPowerIncrease(veh, 5.0) -- multiplier for acceleration
+                    ModifyVehicleTopSpeed(veh, 50.0)
+                    SetVehicleCheatPowerIncrease(veh, 5.0)
                     SetVehicleForwardSpeed(veh, boostSpeed)
-                else
-                    -- Reset when horn not pressed
-                    SetVehicleBoostActive(veh, false)
-                    ModifyVehicleTopSpeed(veh, 0.0)
-                    SetVehicleCheatPowerIncrease(veh, 0.0)
+
+                    boosting = true
+                elseif boosting then
+                    resetVehicleMods(veh, lastVehTopSpeedMod)
+                    boosting = false
                 end
+            elseif veh == 0 and lastVeh ~= 0 and boosting then
+                resetVehicleMods(lastVeh, lastVehTopSpeedMod)
+                boosting = false
             end
 
             Wait(0)
+        end
+
+        if lastVeh ~= 0 then
+            resetVehicleMods(lastVeh, lastVehTopSpeedMod)
         end
     end)
 end
