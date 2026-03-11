@@ -1,6 +1,6 @@
 {
     "name": "Moonwalk",
-    "description": "F7 toggles; W moves you backward while facing camera (client-only)",
+    "description": "เดินถอยหลัง (F7)",
     "author": "Swift",
     "version": "1.0.0"
 }
